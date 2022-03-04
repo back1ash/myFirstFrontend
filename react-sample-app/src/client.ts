@@ -1,7 +1,6 @@
 import Axios, { AxiosInstance, AxiosResponse, CancelToken } from 'axios';
 
-const baseURL =
-  'https://demochat-8b7e5-default-rtdb.asia-southeast1.firebasedatabase.app/';
+const baseURL = 'http://localhost:5001/demochat-8b7e5/us-central1/v1';
 
 const instance: AxiosInstance = Axios.create({
   baseURL,
@@ -24,8 +23,18 @@ export const fetchMessages = (
   params = {},
   cancelToken: CancelToken = null
 ): Promise<AxiosResponse<{ messages: Message[] }>> => {
-  return instance.get(`/channels/${channelName}/messages`, {
+  return instance.get(`/channels/${channelName}/messages/`, {
     params,
+    cancelToken,
+  });
+};
+
+export const postMessage = (
+  channelName: string,
+  payload: Message,
+  cancelToken: CancelToken = null
+): Promise<AxiosResponse<Message>> => {
+  return instance.post(`/channels/${channelName}/messages`, payload, {
     cancelToken,
   });
 };

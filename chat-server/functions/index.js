@@ -14,7 +14,7 @@ admin.initializeApp(functions.config().firebase);
 const express = require('express');
 const app = express();
 //cors 모듈 임포트 및 인스턴스 생성
-const cors = require('cors')({origin: true});
+const cors = require('cors')({ origin: true });
 app.use(cors);
 
 //사용자 정보 받아오기
@@ -28,7 +28,10 @@ const checkUser = (req, res, next) => {
   req.user = anonymousUser;
   if (req.query.auth_token !== undefined) {
     let idToken = req.query.auth_token;
-    admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
+    admin
+      .auth()
+      .verifyIdToken(idToken)
+      .then((decodedIdToken) => {
         let authUser = {
           id: decodedIdToken.user_id,
           name: decodedIdToken.name,
@@ -36,7 +39,8 @@ const checkUser = (req, res, next) => {
         };
         req.user = authUser;
         next();
-      }).catch((error) => {
+      })
+      .catch((error) => {
         next();
       });
   } else {
@@ -46,7 +50,7 @@ const checkUser = (req, res, next) => {
 app.use(checkUser);
 
 //채널 생성 api
-function createChannel(cname){
+function createChannel(cname) {
   let channelsRef = admin.database().ref('channels');
   let date1 = new Date();
   let date2 = new Date();
@@ -80,20 +84,21 @@ app.post('/channels', (req, res) => {
   let cname = req.body.cname;
   createChannel(cname);
   res.header('Content-Type', 'application/json; charset=utf-8');
-  res.status(201).json({result: 'ok'});
+  res.status(201).json({ result: 'ok' });
 });
 
 // 채널 목록을 확인하는 API
 app.get('/channels', (req, res) => {
   let channelsRef = admin.database().ref('channels');
-  channelsRef.once('value', function(snapshot) {
+  channelsRef.once('value', function (snapshot) {
     let items = new Array();
-    snapshot.forEach(function(childSnapshot) {
+    snapshot.forEach(function (childSnapshot) {
       let cname = childSnapshot.key;
       items.push(cname);
     });
     res.header('Content-Type', 'application/json; charset=utf-8');
-    res.send({channels: items});
+    res.header('Access-Control-Allow-Origin', '*');
+    res.send({ channels: items });
   });
 });
 
@@ -108,23 +113,28 @@ app.post('/channels/:cname/messages', (req, res) => {
   let messagesRef = admin.database().ref(`channels/${cname}/messages`);
   messagesRef.push(message);
   res.header('Content-Type', 'application/json; charset=utf-8');
-  res.status(201).send({result: "ok"});
+  res.status(201).send({ result: 'ok' });
 });
 
 //채널 내 메시지 목록을 확인하는 API
 app.get('/channels/:cname/messages', (req, res) => {
   let cname = req.params.cname;
-  let messagesRef = admin.database().ref(`channels/${cname}/messages`).orderByChild('date').limitToLast(20);
-  messagesRef.once('value', function(snapshot) {
+  let messagesRef = admin
+    .database()
+    .ref(`channels/${cname}/messages`)
+    .orderByChild('date')
+    .limitToLast(20);
+  messagesRef.once('value', function (snapshot) {
     let items = new Array();
-    snapshot.forEach(function(childSnapshot) {
+    snapshot.forEach(function (childSnapshot) {
       let message = childSnapshot.val();
       message.id = childSnapshot.key;
       items.push(message);
     });
     items.reverse();
     res.header('Content-Type', 'application/json; charset=utf-8');
-    res.send({messages: items});
+    res.header('Access-Control-Allow-Origin', '*');
+    res.send({ messages: items });
   });
 });
 
@@ -133,7 +143,7 @@ app.post('/reset', (req, res) => {
   createChannel('general');
   createChannel('random');
   res.header('Content-Type', 'application/json; charset=utf-8');
-  res.status(201).send({result: "ok"});
+  res.status(201).send({ result: 'ok' });
 });
 
 exports.v1 = functions.https.onRequest(app);

@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
+    "cors": "^2.8.5",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-router": "^4.2.0",
@@ -30,5 +31,6 @@
     "webpack-cli": "^2.0.10",
     "webpack-dev-server": "^3.1.0"
   },
-  "description": ""
+  "description": "",
+  "proxy": "https://demochat-8b7e5-default-rtdb.asia-southeast1.firebasedatabase.app"
 }

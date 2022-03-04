@@ -5,18 +5,19 @@ import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 import { ChannelList } from './components';
 // @ts-ignore
 import { Container } from 'semantic-ui-react';
+import { Channel } from './containers';
 
 const routes = (
   <BrowserRouter>
     <div id="wrapper">
       <ChannelList />
-      <main style={{ margin: '1rem 0 1tem 16rem' }}>
+      <main style={{ margin: '1rem 0 1rem 16rem' }}>
         <Container>
           <Switch>
             <Route
               exact={true}
               path="/channels/:channelName"
-              render={(props) => <h2>{props.match.params.channelName} </h2>}
+              component={Channel}
             />
             <Route
               exact={true}
